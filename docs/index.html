@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="theme-color" content="#0a0f1e"/>
+<title>Согым App</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+:root{
+  --bg:#0a0f1e;--card:#111827;--card2:#1a2540;
+  --blue:#3b82f6;--green:#22c55e;--red:#ef4444;--gold:#f59e0b;
+  --text:#f1f5f9;--muted:#94a3b8;--border:rgba(255,255,255,.08);
+  --radius:18px;--safe:env(safe-area-inset-bottom,0px);
+}
+html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,sans-serif;overflow:hidden;}
+#app{height:100%;display:flex;flex-direction:column;}
+.header{padding:16px 20px 12px;background:rgba(10,15,30,.9);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
+.header-title{font-size:1.2rem;font-weight:800;}
+.header-title span{color:var(--blue);}
+.icon-btn{width:38px;height:38px;border-radius:12px;border:none;background:rgba(59,130,246,.12);color:var(--blue);font-size:1.2rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .2s;}
+.icon-btn:active{background:rgba(59,130,246,.25);}
+.screen{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;}
+.screen::-webkit-scrollbar{display:none;}
+.screen.hidden{display:none;}
+.pad{padding:16px;}
+.tabs{display:flex;gap:8px;padding:12px 16px;border-bottom:1px solid var(--border);flex-shrink:0;}
+.tab{padding:6px 16px;border-radius:99px;font-size:.82rem;font-weight:600;border:none;cursor:pointer;transition:all .2s;background:rgba(255,255,255,.06);color:var(--muted);}
+.tab.active{background:var(--blue);color:#fff;}
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:12px;cursor:pointer;transition:transform .15s,border-color .2s;}
+.card:active{transform:scale(.98);}
+.card-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:10px;}
+.card-emoji{font-size:2rem;flex-shrink:0;margin-right:10px;}
+.card-info{flex:1;}
+.card-title{font-size:.95rem;font-weight:700;margin-bottom:3px;}
+.card-sub{font-size:.78rem;color:var(--muted);}
+.badge{padding:3px 10px;border-radius:99px;font-size:.72rem;font-weight:700;flex-shrink:0;}
+.badge-open{background:rgba(34,197,94,.15);color:var(--green);}
+.badge-closed{background:rgba(239,68,68,.1);color:var(--red);}
+.badge-full{background:rgba(245,158,11,.15);color:var(--gold);}
+.progress-wrap{margin:8px 0 4px;}
+.progress-bar{height:6px;background:rgba(255,255,255,.07);border-radius:99px;overflow:hidden;}
+.progress-fill{height:100%;border-radius:99px;background:linear-gradient(90deg,var(--blue),#8b5cf6);transition:width .4s;}
+.progress-label{display:flex;justify-content:space-between;font-size:.72rem;color:var(--muted);margin-top:4px;}
+.price-chip{display:inline-flex;align-items:center;gap:4px;background:rgba(59,130,246,.1);border:1px solid rgba(59,130,246,.2);border-radius:8px;padding:4px 10px;font-size:.8rem;font-weight:700;color:#93c5fd;}
+.detail-hero{background:linear-gradient(135deg,#1e3a5f,#0f172a);border-radius:var(--radius);padding:20px;margin-bottom:12px;text-align:center;}
+.detail-emoji{font-size:3.5rem;display:block;margin-bottom:8px;}
+.detail-title{font-size:1.3rem;font-weight:800;margin-bottom:4px;}
+.detail-meta{font-size:.82rem;color:var(--muted);}
+.info-row{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;}
+.info-chip{background:var(--card2);border:1px solid var(--border);border-radius:10px;padding:8px 12px;font-size:.78rem;flex:1;min-width:120px;}
+.info-chip label{display:block;color:var(--muted);font-size:.7rem;margin-bottom:2px;}
+.info-chip span{font-weight:600;}
+.section-label{font-size:.75rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin:16px 0 8px;}
+.participant-row{background:var(--card2);border-radius:12px;padding:12px;display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;}
+.p-info{display:flex;align-items:center;gap:10px;}
+.p-ava{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#3b82f6,#6366f1);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.9rem;}
+.p-name{font-size:.88rem;font-weight:600;}
+.p-phone{font-size:.74rem;color:var(--muted);}
+.paid-badge{font-size:.75rem;font-weight:700;padding:3px 10px;border-radius:99px;}
+.paid-yes{background:rgba(34,197,94,.15);color:var(--green);}
+.paid-no{background:rgba(245,158,11,.15);color:var(--gold);}
+.btn{width:100%;padding:14px;border-radius:14px;border:none;font-size:.95rem;font-weight:700;cursor:pointer;transition:opacity .2s,transform .1s;}
+.btn:active{transform:scale(.98);}
+.btn-primary{background:linear-gradient(135deg,#3b82f6,#6366f1);color:#fff;box-shadow:0 4px 16px rgba(59,130,246,.35);}
+.btn-danger{background:rgba(239,68,68,.15);color:var(--red);border:1px solid rgba(239,68,68,.2);}
+.btn-ghost{background:rgba(255,255,255,.06);color:var(--text);border:1px solid var(--border);}
+.btn-sm{width:auto;padding:6px 14px;font-size:.78rem;border-radius:10px;}
+.btn-row{display:flex;gap:8px;margin-top:12px;}
+.btn-row .btn{flex:1;}
+.form-group{margin-bottom:14px;}
+.form-label{font-size:.8rem;font-weight:600;color:var(--muted);margin-bottom:6px;display:block;}
+.form-input{width:100%;background:var(--card2);border:1px solid var(--border);border-radius:12px;padding:12px 14px;color:var(--text);font-size:.9rem;outline:none;transition:border-color .2s;font-family:inherit;}
+.form-input:focus{border-color:var(--blue);}
+.form-input::placeholder{color:var(--muted);}
+.animal-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
+.animal-opt{background:var(--card2);border:2px solid var(--border);border-radius:14px;padding:14px 8px;text-align:center;cursor:pointer;transition:all .2s;}
+.animal-opt.selected{border-color:var(--blue);background:rgba(59,130,246,.1);}
+.animal-opt .a-emoji{font-size:1.8rem;display:block;margin-bottom:4px;}
+.animal-opt .a-name{font-size:.72rem;color:var(--muted);}
+.animal-opt .a-price{font-size:.7rem;color:var(--blue);font-weight:700;margin-top:2px;}
+.bottom-nav{display:flex;border-top:1px solid var(--border);background:rgba(10,15,30,.95);backdrop-filter:blur(12px);padding:8px 0 calc(8px + var(--safe));flex-shrink:0;}
+.nav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:4px 0;cursor:pointer;border:none;background:none;color:var(--muted);transition:color .2s;}
+.nav-item.active{color:var(--blue);}
+.nav-icon{font-size:1.3rem;}
+.nav-label{font-size:.65rem;font-weight:600;}
+.empty{text-align:center;padding:60px 20px;}
+.empty-icon{font-size:3.5rem;display:block;margin-bottom:12px;}
+.empty-title{font-size:1rem;font-weight:700;margin-bottom:6px;}
+.empty-sub{font-size:.85rem;color:var(--muted);}
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);display:flex;align-items:flex-end;z-index:100;backdrop-filter:blur(4px);}
+.modal-overlay.hidden{display:none;}
+.modal{background:var(--card);border-radius:24px 24px 0 0;width:100%;max-height:90vh;overflow-y:auto;padding:20px 20px calc(20px + var(--safe));}
+.modal-handle{width:40px;height:4px;background:var(--border);border-radius:99px;margin:0 auto 16px;}
+.modal-title{font-size:1.1rem;font-weight:800;margin-bottom:16px;}
+.toast{position:fixed;bottom:calc(80px + var(--safe));left:50%;transform:translateX(-50%) translateY(20px);background:#1e293b;border:1px solid var(--border);border-radius:12px;padding:10px 20px;font-size:.85rem;font-weight:600;z-index:200;opacity:0;transition:all .3s;white-space:nowrap;max-width:90vw;text-align:center;}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+.toast.success{border-color:var(--green);color:var(--green);}
+.toast.error{border-color:var(--red);color:var(--red);}
+</style>
+</head>
+<body>
+<div id="app">
+  <div class="header">
+    <div class="header-title">🥩 <span>Согым</span>App</div>
+    <button class="icon-btn" id="headerActionBtn">＋</button>
+  </div>
+  <div id="screenHome" class="screen">
+    <div class="tabs">
+      <button class="tab active" data-tab="open">Белсенді</button>
+      <button class="tab" data-tab="closed">Аяқталған</button>
+    </div>
+    <div class="pad" id="purchaseList"></div>
+  </div>
+  <div id="screenDetail" class="screen hidden">
+    <div class="pad" id="detailContent"></div>
+  </div>
+  <div id="screenCreate" class="screen hidden">
+    <div class="pad">
+      <div style="font-size:1rem;font-weight:800;margin-bottom:16px;">➕ Жаңа согым</div>
+      <div class="form-group"><label class="form-label">Атауы *</label><input class="form-input" id="fTitle" placeholder="мысалы: Абай көшесі согымы"/></div>
+      <div class="form-group">
+        <label class="form-label">Мал түрі *</label>
+        <div class="animal-grid">
+          <div class="animal-opt" data-id="cow" data-price="2500" onclick="selectAnimal(this)"><span class="a-emoji">🐄</span><div class="a-name">Сиыр</div><div class="a-price">4 үлес</div></div>
+          <div class="animal-opt" data-id="horse" data-price="3000" onclick="selectAnimal(this)"><span class="a-emoji">🐎</span><div class="a-name">Жылқы</div><div class="a-price">4 үлес</div></div>
+          <div class="animal-opt" data-id="sheep" data-price="2000" onclick="selectAnimal(this)"><span class="a-emoji">🐑</span><div class="a-name">Қой</div><div class="a-price">2 үлес</div></div>
+        </div>
+      </div>
+      <div class="form-group"><label class="form-label">Баға (тг/кг) *</label><input class="form-input" id="fPrice" type="number" placeholder="2500"/></div>
+      <div class="form-group"><label class="form-label">Союу күні</label><input class="form-input" id="fDate" type="date"/></div>
+      <div class="form-group"><label class="form-label">Орны</label><input class="form-input" id="fLocation" placeholder="мысалы: Алматы, Алатау ауданы"/></div>
+      <div style="border-top:1px solid var(--border);margin:16px 0 14px;padding-top:14px;font-size:.8rem;font-weight:700;color:var(--muted);">ҰЙЫМДАСТЫРУШЫ</div>
+      <div class="form-group"><label class="form-label">Есімі *</label><input class="form-input" id="fOwnerName" placeholder="Сіздің есіміңіз"/></div>
+      <div class="form-group"><label class="form-label">Телефон *</label><input class="form-input" id="fOwnerPhone" type="tel" placeholder="+7 777 123 4567"/></div>
+      <button class="btn btn-primary" id="btnCreate">✅ Согым жасау</button>
+    </div>
+  </div>
+  <div id="screenMy" class="screen hidden">
+    <div class="pad" id="myList"></div>
+  </div>
+  <div class="bottom-nav">
+    <button class="nav-item active" data-screen="home"><span class="nav-icon">🏠</span><span class="nav-label">Басты</span></button>
+    <button class="nav-item" data-screen="create"><span class="nav-icon">➕</span><span class="nav-label">Ашу</span></button>
+    <button class="nav-item" data-screen="my"><span class="nav-icon">👤</span><span class="nav-label">Менікі</span></button>
+  </div>
+</div>
+
+<!-- JOIN MODAL -->
+<div class="modal-overlay hidden" id="joinModal">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title">✋ Согымға қосылу</div>
+    <div class="form-group"><label class="form-label">Есіміңіз *</label><input class="form-input" id="joinName" placeholder="Аты-жөніңіз"/></div>
+    <div class="form-group"><label class="form-label">Телефон *</label><input class="form-input" id="joinPhone" type="tel" placeholder="+7 777 000 0000"/></div>
+    <div id="joinShareInfo" style="background:rgba(59,130,246,.08);border:1px solid rgba(59,130,246,.2);border-radius:12px;padding:12px;margin-bottom:14px;font-size:.82rem;"></div>
+    <button class="btn btn-primary" id="btnJoinConfirm">Қосылу</button>
+    <button class="btn btn-ghost" style="margin-top:8px;" id="btnJoinCancel">Болдырмау</button>
+  </div>
+</div>
+
+<!-- PAID MODAL -->
+<div class="modal-overlay hidden" id="paidModal">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title">💰 Төлемді растау</div>
+    <div class="form-group"><label class="form-label">Ұйымдастырушының телефоны *</label><input class="form-input" id="ownerPhoneInput" placeholder="+7 777 000 0000"/></div>
+    <div id="paidParticipantInfo" style="font-size:.85rem;margin-bottom:14px;"></div>
+    <button class="btn btn-primary" id="btnPaidConfirm">✅ Төлем расталды</button>
+    <button class="btn btn-ghost" style="margin-top:8px;" id="btnPaidCancel">Болдырмау</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ── STORAGE ──────────────────────────────────
+const STORE_KEY = 'sogym_app_v1';
+const ANIMALS = {
+  cow:   {name:'🐄 Сиыр',   shares:4, weight:200, default_price:2500},
+  horse: {name:'🐎 Жылқы',  shares:4, weight:220, default_price:3000},
+  sheep: {name:'🐑 Қой',    shares:2, weight:45,  default_price:2000},
+};
+
+function loadStore() {
+  try { return JSON.parse(localStorage.getItem(STORE_KEY)) || {purchases:[], nextId:1}; }
+  catch { return {purchases:[], nextId:1}; }
+}
+function saveStore(s) { localStorage.setItem(STORE_KEY, JSON.stringify(s)); }
+
+function getPurchases(status) {
+  const s = loadStore();
+  return status ? s.purchases.filter(p => p.status === status) : s.purchases;
+}
+function getPurchase(id) {
+  return loadStore().purchases.find(p => p.id === id) || null;
+}
+function enrichPurchase(p) {
+  const cfg = ANIMALS[p.animal] || {};
+  const taken = (p.participants||[]).reduce((a,x)=>a+x.shares,0);
+  return { ...p, animal_name: cfg.name||p.animal, taken, free: p.shares - taken,
+    price_per_share: Math.round(p.price_per_kg * p.weight / p.shares) };
+}
+
+// ── STATE ────────────────────────────────────
+let S = { tab:'open', screen:'home', currentId:null, selectedAnimal:null, joinId:null, paidId:null, paidPhone:null };
+
+// ── HELPERS ──────────────────────────────────
+const money = n => n ? n.toLocaleString('ru-RU') + ' ₸' : '';
+const fmtDate = d => { if(!d) return ''; try { return new Date(d).toLocaleDateString('ru-RU',{day:'numeric',month:'long'}); } catch{ return d; } };
+const emojiOf = a => ({cow:'🐄',horse:'🐎',sheep:'🐑'}[a]||'🥩');
+
+function progressBar(taken, total) {
+  const pct = total ? Math.round(taken/total*100) : 0;
+  const color = pct===100 ? '#f59e0b' : '#3b82f6';
+  return `<div class="progress-bar"><div class="progress-fill" style="width:${pct}%;background:${color}"></div></div>
+  <div class="progress-label"><span>${taken}/${total} үлес</span><span>${100-pct}% бос</span></div>`;
+}
+
+function toast(msg, type='success') {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.className = `toast show ${type}`;
+  setTimeout(() => t.className='toast', 2500);
+}
+
+// ── NAVIGATE ─────────────────────────────────
+function navigate(screen) {
+  ['home','detail','create','my'].forEach(s => {
+    document.getElementById(`screen${s[0].toUpperCase()+s.slice(1)}`).classList.toggle('hidden', s!==screen);
+  });
+  document.querySelectorAll('.nav-item').forEach(el => el.classList.toggle('active', el.dataset.screen===screen));
+  document.getElementById('headerActionBtn').textContent = screen==='detail' ? '←' : '＋';
+  S.screen = screen;
+  if(screen==='home') renderHome();
+  if(screen==='my') renderMy();
+}
+
+// ── HOME ─────────────────────────────────────
+function renderHome() {
+  const list = document.getElementById('purchaseList');
+  const data = getPurchases(S.tab).map(enrichPurchase).reverse();
+  if(!data.length) {
+    list.innerHTML = `<div class="empty"><span class="empty-icon">🔍</span><div class="empty-title">Согым жоқ</div><div class="empty-sub">${S.tab==='open'?'Жаңа согым ашыңыз!':'Аяқталған согымдар жоқ'}</div></div>`;
+    return;
+  }
+  list.innerHTML = data.map(p => {
+    const isFull = p.free<=0;
+    const badge = p.status==='closed' ? '<span class="badge badge-closed">Жабық</span>' :
+                  isFull ? '<span class="badge badge-full">Толы</span>' :
+                  '<span class="badge badge-open">Ашық</span>';
+    return `<div class="card" onclick="openDetail(${p.id})">
+      <div class="card-top">
+        <span class="card-emoji">${emojiOf(p.animal)}</span>
+        <div class="card-info"><div class="card-title">${p.title}</div><div class="card-sub">${p.animal_name}${p.location?' · '+p.location:''}</div></div>
+        ${badge}
+      </div>
+      <div class="progress-wrap">${progressBar(p.taken, p.shares)}</div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-top:8px;">
+        <span class="price-chip">💰 ${money(p.price_per_share)}</span>
+        <span style="font-size:.75rem;color:var(--muted);">${p.event_date?'📅 '+fmtDate(p.event_date):''}</span>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ── DETAIL ───────────────────────────────────
+function openDetail(id) {
+  S.currentId = id;
+  navigate('detail');
+  renderDetail();
+}
+
+function renderDetail() {
+  const p = enrichPurchase(getPurchase(S.currentId));
+  if(!p) return;
+  const isFull = p.free<=0, isClosed = p.status==='closed';
+  document.getElementById('detailContent').innerHTML = `
+    <div class="detail-hero">
+      <span class="detail-emoji">${emojiOf(p.animal)}</span>
+      <div class="detail-title">${p.title}</div>
+      <div class="detail-meta">${p.animal_name} · ${isClosed?'🔴 Жабық':'🟢 Ашық'}</div>
+    </div>
+    <div class="info-row">
+      <div class="info-chip"><label>💰 1 үлес</label><span>${money(p.price_per_share)}</span></div>
+      <div class="info-chip"><label>⚖️ Салмақ</label><span>~${p.weight} кг</span></div>
+      <div class="info-chip"><label>📊 Үлестер</label><span>${p.taken}/${p.shares}</span></div>
+      <div class="info-chip"><label>💵 Баға/кг</label><span>${money(p.price_per_kg)}</span></div>
+    </div>
+    ${p.event_date||p.location?`<div class="info-row">
+      ${p.event_date?`<div class="info-chip"><label>📅 Күні</label><span>${fmtDate(p.event_date)}</span></div>`:''}
+      ${p.location?`<div class="info-chip"><label>📍 Орны</label><span>${p.location}</span></div>`:''}
+    </div>`:''}
+    <div class="progress-wrap" style="margin:4px 0 12px;">${progressBar(p.taken,p.shares)}</div>
+    ${!isClosed&&!isFull?`<button class="btn btn-primary" onclick="showJoinModal(${p.id},${p.price_per_share})">✋ Қосылу — ${money(p.price_per_share)}</button>`:''}
+    ${isFull&&!isClosed?`<button class="btn btn-ghost" disabled style="opacity:.5">🎯 Барлық үлестер таратылды</button>`:''}
+    <div class="section-label">👥 Қатысушылар (${(p.participants||[]).length})</div>
+    ${(p.participants||[]).length ? (p.participants||[]).map(pt=>`
+      <div class="participant-row">
+        <div class="p-info">
+          <div class="p-ava">${pt.name[0].toUpperCase()}</div>
+          <div><div class="p-name">${pt.name}</div><div class="p-phone">${pt.phone}</div></div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <span class="paid-badge ${pt.paid?'paid-yes':'paid-no'}">${pt.paid?'✅ Төледі':'⏳ Күтілуде'}</span>
+          ${!pt.paid?`<button class="btn btn-ghost btn-sm" onclick="showPaidModal(${p.id},'${pt.phone}','${pt.name}')">✓</button>`:''}
+        </div>
+      </div>`).join('')
+    : `<div style="text-align:center;color:var(--muted);font-size:.85rem;padding:16px;">Әлі ешкім қосылмаған</div>`}
+    <div class="section-label">ℹ️ Ұйымдастырушы</div>
+    <div class="info-chip" style="margin-bottom:16px;"><label>👤 ${p.owner_name}</label><span>${p.owner_phone}</span></div>
+    ${!isClosed?`<div class="btn-row"><button class="btn btn-danger" onclick="closePurchase(${p.id})">🔒 Согымды жабу</button></div>`:''}
+    <div style="height:16px;"></div>`;
+}
+
+// ── CREATE ───────────────────────────────────
+function selectAnimal(el) {
+  document.querySelectorAll('.animal-opt').forEach(e=>e.classList.remove('selected'));
+  el.classList.add('selected');
+  S.selectedAnimal = el.dataset.id;
+  if(!document.getElementById('fPrice').value) document.getElementById('fPrice').value = el.dataset.price;
+}
+
+document.getElementById('btnCreate').onclick = () => {
+  const title = document.getElementById('fTitle').value.trim();
+  const price = parseInt(document.getElementById('fPrice').value);
+  const ownerName = document.getElementById('fOwnerName').value.trim();
+  const ownerPhone = document.getElementById('fOwnerPhone').value.trim();
+  if(!title) return toast('Атауын енгізіңіз','error');
+  if(!S.selectedAnimal) return toast('Мал түрін таңдаңыз','error');
+  if(!price||price<100) return toast('Дұрыс баға енгізіңіз','error');
+  if(!ownerName) return toast('Есіміңізді енгізіңіз','error');
+  if(!ownerPhone) return toast('Телефонды енгізіңіз','error');
+
+  const cfg = ANIMALS[S.selectedAnimal];
+  const store = loadStore();
+  const purchase = {
+    id: store.nextId++,
+    title, animal: S.selectedAnimal,
+    price_per_kg: price,
+    weight: cfg.weight, shares: cfg.shares,
+    event_date: document.getElementById('fDate').value || null,
+    location: document.getElementById('fLocation').value.trim() || null,
+    owner_name: ownerName, owner_phone: ownerPhone,
+    status: 'open', participants: [],
+    created_at: new Date().toISOString(),
+  };
+  store.purchases.push(purchase);
+  saveStore(store);
+
+  ['fTitle','fPrice','fDate','fLocation','fOwnerName','fOwnerPhone'].forEach(id=>document.getElementById(id).value='');
+  S.selectedAnimal = null;
+  document.querySelectorAll('.animal-opt').forEach(e=>e.classList.remove('selected'));
+  toast('🎉 Согым жасалды!');
+  openDetail(purchase.id);
+};
+
+// ── JOIN ─────────────────────────────────────
+function showJoinModal(pid, price) {
+  S.joinId = pid;
+  document.getElementById('joinShareInfo').innerHTML = `1 үлестің бағасы: <strong style="color:var(--blue)">${money(price)}</strong>`;
+  document.getElementById('joinName').value = '';
+  document.getElementById('joinPhone').value = '';
+  document.getElementById('joinModal').classList.remove('hidden');
+}
+document.getElementById('btnJoinCancel').onclick = () => document.getElementById('joinModal').classList.add('hidden');
+document.getElementById('btnJoinConfirm').onclick = () => {
+  const name = document.getElementById('joinName').value.trim();
+  const phone = document.getElementById('joinPhone').value.trim();
+  if(!name||!phone) return toast('Есім мен телефонды толтырыңыз','error');
+
+  const store = loadStore();
+  const p = store.purchases.find(x=>x.id===S.joinId);
+  if(!p) return;
+  if((p.participants||[]).find(x=>x.phone===phone)) return toast('Бұл телефон бұрыннан тіркелген','error');
+  p.participants = p.participants||[];
+  p.participants.push({name, phone, shares:1, paid:0});
+  saveStore(store);
+  document.getElementById('joinModal').classList.add('hidden');
+  renderDetail();
+  toast('✅ Сіз согымға қосылдыңыз!');
+};
+
+// ── PAID ─────────────────────────────────────
+function showPaidModal(pid, phone, name) {
+  S.paidId=pid; S.paidPhone=phone;
+  document.getElementById('paidParticipantInfo').innerHTML = `Қатысушы: <strong>${name}</strong> (${phone})`;
+  document.getElementById('ownerPhoneInput').value='';
+  document.getElementById('paidModal').classList.remove('hidden');
+}
+document.getElementById('btnPaidCancel').onclick = () => document.getElementById('paidModal').classList.add('hidden');
+document.getElementById('btnPaidConfirm').onclick = () => {
+  const ownerPhone = document.getElementById('ownerPhoneInput').value.trim();
+  const store = loadStore();
+  const p = store.purchases.find(x=>x.id===S.paidId);
+  if(!p) return;
+  if(p.owner_phone !== ownerPhone) return toast('Телефон сәйкес емес','error');
+  const pt = p.participants.find(x=>x.phone===S.paidPhone);
+  if(pt) pt.paid = 1;
+  saveStore(store);
+  document.getElementById('paidModal').classList.add('hidden');
+  renderDetail();
+  toast('✅ Төлем расталды!');
+};
+
+// ── CLOSE ────────────────────────────────────
+function closePurchase(id) {
+  const phone = prompt('Ұйымдастырушының телефонын растаңыз:');
+  if(!phone) return;
+  const store = loadStore();
+  const p = store.purchases.find(x=>x.id===id);
+  if(!p) return;
+  if(p.owner_phone !== phone.trim()) return toast('Телефон сәйкес емес','error');
+  p.status = 'closed';
+  saveStore(store);
+  toast('🔒 Согым жабылды');
+  renderDetail();
+}
+
+// ── MY ───────────────────────────────────────
+function renderMy() {
+  const all = getPurchases().map(enrichPurchase).reverse();
+  const el = document.getElementById('myList');
+  el.innerHTML = `<div style="font-size:1rem;font-weight:800;margin-bottom:16px;">👤 Барлық согымдар</div>`;
+  if(!all.length) { el.innerHTML += `<div class="empty"><span class="empty-icon">📭</span><div class="empty-title">Согым жоқ</div><div class="empty-sub">Жаңа согым ашыңыз</div></div>`; return; }
+  el.innerHTML += all.map(p=>`<div class="card" onclick="openDetail(${p.id})">
+    <div class="card-top">
+      <span class="card-emoji">${emojiOf(p.animal)}</span>
+      <div class="card-info"><div class="card-title">${p.title}</div><div class="card-sub">${p.animal_name}</div></div>
+      <span class="badge ${p.status==='closed'?'badge-closed':p.free<=0?'badge-full':'badge-open'}">${p.status==='closed'?'Жабық':p.free<=0?'Толы':'Ашық'}</span>
+    </div>
+    <div class="progress-wrap">${progressBar(p.taken,p.shares)}</div>
+  </div>`).join('');
+}
+
+// ── TABS ─────────────────────────────────────
+document.querySelectorAll('.tab').forEach(btn => {
+  btn.onclick = () => {
+    document.querySelectorAll('.tab').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    S.tab = btn.dataset.tab;
+    renderHome();
+  };
+});
+
+// ── NAV ──────────────────────────────────────
+document.querySelectorAll('.nav-item').forEach(btn => { btn.onclick = () => navigate(btn.dataset.screen); });
+document.getElementById('headerActionBtn').onclick = () => { if(S.screen==='detail') navigate('home'); else navigate('create'); };
+
+// ── SEED DATA ────────────────────────────────
+(function seedIfEmpty() {
+  const store = loadStore();
+  if(store.purchases.length) return;
+  const now = new Date().toISOString();
+  store.purchases = [
+    {id:1,title:'Абай көшесі согымы',animal:'cow',price_per_kg:2500,weight:200,shares:4,event_date:'2026-11-15',location:'Алматы, Алатау',owner_name:'Серік',owner_phone:'+77771234567',status:'open',created_at:now,
+     participants:[{name:'Алибек Нұрланов',phone:'+77770001111',shares:1,paid:1},{name:'Дина Сейткали',phone:'+77770002222',shares:1,paid:0},{name:'Марат Жақсыбеков',phone:'+77770003333',shares:1,paid:0}]},
+    {id:2,title:'Достар согымы 2026',animal:'horse',price_per_kg:3200,weight:220,shares:4,event_date:'2026-11-20',location:'Астана, Есіл',owner_name:'Айгүл',owner_phone:'+77779876543',status:'open',created_at:now,participants:[]},
+    {id:3,title:'Қой согымы — Наурыз',animal:'sheep',price_per_kg:1800,weight:45,shares:2,location:'Шымкент',owner_name:'Дәурен',owner_phone:'+77771112233',status:'open',created_at:now,participants:[]},
+  ];
+  store.nextId = 4;
+  saveStore(store);
+})();
+
+// ── INIT ─────────────────────────────────────
+renderHome();
+</script>
+</body>
+</html>
