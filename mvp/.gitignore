@@ -1,0 +1,6 @@
+__pycache__/
+*.pyc
+sogym.db
+server.log
+server.err
+.claude/

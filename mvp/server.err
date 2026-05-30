@@ -1,0 +1,15 @@
+INFO:     Will watch for changes in these directories: ['C:\\Users\\telecom.kz\\Desktop\\sogym_bot\\mvp']
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+INFO:     Started reloader process [16328] using WatchFiles
+INFO:     Started server process [5180]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+WARNING:  WatchFiles detected changes in 'main.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [5180]
+INFO:     Started server process [4292]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+WARNING:  WatchFiles detected changes in 'main.py'. Reloading...

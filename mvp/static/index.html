@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="theme-color" content="#0a0f1e"/>
+<title>Согым App</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+:root{
+  --bg:#0a0f1e; --card:#111827; --card2:#1a2540;
+  --blue:#3b82f6; --blue2:#1d4ed8;
+  --green:#22c55e; --red:#ef4444; --gold:#f59e0b;
+  --text:#f1f5f9; --muted:#94a3b8; --border:rgba(255,255,255,.08);
+  --radius:18px; --safe:env(safe-area-inset-bottom,0px);
+}
+html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,sans-serif;overflow:hidden;}
+#app{height:100%;display:flex;flex-direction:column;}
+
+/* ── HEADER ── */
+.header{
+  padding:16px 20px 12px;
+  background:rgba(10,15,30,.9);backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;
+  flex-shrink:0;
+}
+.header-title{font-size:1.2rem;font-weight:800;}
+.header-title span{color:var(--blue);}
+.icon-btn{
+  width:38px;height:38px;border-radius:12px;border:none;
+  background:rgba(59,130,246,.12);color:var(--blue);
+  font-size:1.1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;
+  transition:background .2s;
+}
+.icon-btn:active{background:rgba(59,130,246,.25);}
+
+/* ── SCREEN ── */
+.screen{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;}
+.screen::-webkit-scrollbar{display:none;}
+.screen.hidden{display:none;}
+.pad{padding:16px;}
+
+/* ── TABS ── */
+.tabs{
+  display:flex;gap:8px;padding:12px 16px;
+  border-bottom:1px solid var(--border);flex-shrink:0;
+}
+.tab{
+  padding:6px 16px;border-radius:99px;font-size:.82rem;font-weight:600;
+  border:none;cursor:pointer;transition:all .2s;
+  background:rgba(255,255,255,.06);color:var(--muted);
+}
+.tab.active{background:var(--blue);color:#fff;}
+
+/* ── CARD ── */
+.card{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:var(--radius);padding:16px;margin-bottom:12px;
+  cursor:pointer;transition:transform .15s,border-color .2s;
+  active-scale:.97;
+}
+.card:active{transform:scale(.98);}
+.card.selected{border-color:var(--blue);}
+.card-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:10px;}
+.card-emoji{font-size:2rem;flex-shrink:0;margin-right:10px;}
+.card-info{flex:1;}
+.card-title{font-size:.95rem;font-weight:700;margin-bottom:3px;}
+.card-sub{font-size:.78rem;color:var(--muted);}
+.badge{
+  padding:3px 10px;border-radius:99px;font-size:.72rem;font-weight:700;flex-shrink:0;
+}
+.badge-open{background:rgba(34,197,94,.15);color:var(--green);}
+.badge-closed{background:rgba(239,68,68,.1);color:var(--red);}
+.badge-full{background:rgba(245,158,11,.15);color:var(--gold);}
+
+/* ── PROGRESS ── */
+.progress-wrap{margin:8px 0 4px;}
+.progress-bar{height:6px;background:rgba(255,255,255,.07);border-radius:99px;overflow:hidden;}
+.progress-fill{height:100%;border-radius:99px;background:linear-gradient(90deg,var(--blue),#8b5cf6);transition:width .4s;}
+.progress-label{display:flex;justify-content:space-between;font-size:.72rem;color:var(--muted);margin-top:4px;}
+
+/* ── PRICE ── */
+.price-chip{
+  display:inline-flex;align-items:center;gap:4px;
+  background:rgba(59,130,246,.1);border:1px solid rgba(59,130,246,.2);
+  border-radius:8px;padding:4px 10px;font-size:.8rem;font-weight:700;color:#93c5fd;
+}
+
+/* ── DETAIL ── */
+.detail-hero{
+  background:linear-gradient(135deg,#1e3a5f,#0f172a);
+  border-radius:var(--radius);padding:20px;margin-bottom:12px;
+  text-align:center;
+}
+.detail-emoji{font-size:3.5rem;display:block;margin-bottom:8px;}
+.detail-title{font-size:1.3rem;font-weight:800;margin-bottom:4px;}
+.detail-meta{font-size:.82rem;color:var(--muted);}
+.info-row{
+  display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;
+}
+.info-chip{
+  background:var(--card2);border:1px solid var(--border);
+  border-radius:10px;padding:8px 12px;font-size:.78rem;flex:1;min-width:120px;
+}
+.info-chip label{display:block;color:var(--muted);font-size:.7rem;margin-bottom:2px;}
+.info-chip span{font-weight:600;}
+.section-label{font-size:.75rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin:16px 0 8px;}
+.participant-row{
+  background:var(--card2);border-radius:12px;padding:12px;
+  display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;
+}
+.p-info{display:flex;align-items:center;gap:10px;}
+.p-ava{
+  width:36px;height:36px;border-radius:50%;
+  background:linear-gradient(135deg,#3b82f6,#6366f1);
+  display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.9rem;
+}
+.p-name{font-size:.88rem;font-weight:600;}
+.p-phone{font-size:.74rem;color:var(--muted);}
+.paid-badge{font-size:.75rem;font-weight:700;padding:3px 10px;border-radius:99px;}
+.paid-yes{background:rgba(34,197,94,.15);color:var(--green);}
+.paid-no{background:rgba(245,158,11,.15);color:var(--gold);}
+
+/* ── BUTTONS ── */
+.btn{
+  width:100%;padding:14px;border-radius:14px;border:none;
+  font-size:.95rem;font-weight:700;cursor:pointer;
+  transition:opacity .2s,transform .1s;
+}
+.btn:active{transform:scale(.98);}
+.btn-primary{background:linear-gradient(135deg,#3b82f6,#6366f1);color:#fff;box-shadow:0 4px 16px rgba(59,130,246,.35);}
+.btn-danger{background:rgba(239,68,68,.15);color:var(--red);border:1px solid rgba(239,68,68,.2);}
+.btn-ghost{background:rgba(255,255,255,.06);color:var(--text);border:1px solid var(--border);}
+.btn-sm{width:auto;padding:6px 14px;font-size:.78rem;border-radius:10px;}
+.btn-row{display:flex;gap:8px;margin-top:12px;}
+.btn-row .btn{flex:1;}
+
+/* ── FORM ── */
+.form-group{margin-bottom:14px;}
+.form-label{font-size:.8rem;font-weight:600;color:var(--muted);margin-bottom:6px;display:block;}
+.form-input{
+  width:100%;background:var(--card2);border:1px solid var(--border);
+  border-radius:12px;padding:12px 14px;color:var(--text);font-size:.9rem;
+  outline:none;transition:border-color .2s;font-family:inherit;
+}
+.form-input:focus{border-color:var(--blue);}
+.form-input::placeholder{color:var(--muted);}
+.animal-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
+.animal-opt{
+  background:var(--card2);border:2px solid var(--border);
+  border-radius:14px;padding:14px 8px;text-align:center;
+  cursor:pointer;transition:all .2s;
+}
+.animal-opt.selected{border-color:var(--blue);background:rgba(59,130,246,.1);}
+.animal-opt .a-emoji{font-size:1.8rem;display:block;margin-bottom:4px;}
+.animal-opt .a-name{font-size:.72rem;color:var(--muted);}
+.animal-opt .a-price{font-size:.7rem;color:var(--blue);font-weight:700;margin-top:2px;}
+
+/* ── BOTTOM NAV ── */
+.bottom-nav{
+  display:flex;border-top:1px solid var(--border);
+  background:rgba(10,15,30,.95);backdrop-filter:blur(12px);
+  padding:8px 0 calc(8px + var(--safe));flex-shrink:0;
+}
+.nav-item{
+  flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;
+  padding:4px 0;cursor:pointer;border:none;background:none;
+  color:var(--muted);transition:color .2s;
+}
+.nav-item.active{color:var(--blue);}
+.nav-icon{font-size:1.3rem;}
+.nav-label{font-size:.65rem;font-weight:600;}
+
+/* ── EMPTY ── */
+.empty{text-align:center;padding:60px 20px;}
+.empty-icon{font-size:3.5rem;display:block;margin-bottom:12px;}
+.empty-title{font-size:1rem;font-weight:700;margin-bottom:6px;}
+.empty-sub{font-size:.85rem;color:var(--muted);}
+
+/* ── MODAL ── */
+.modal-overlay{
+  position:fixed;inset:0;background:rgba(0,0,0,.6);
+  display:flex;align-items:flex-end;z-index:100;
+  backdrop-filter:blur(4px);
+}
+.modal-overlay.hidden{display:none;}
+.modal{
+  background:var(--card);border-radius:24px 24px 0 0;
+  width:100%;max-height:90vh;overflow-y:auto;
+  padding:20px 20px calc(20px + var(--safe));
+}
+.modal-handle{width:40px;height:4px;background:var(--border);border-radius:99px;margin:0 auto 16px;}
+.modal-title{font-size:1.1rem;font-weight:800;margin-bottom:16px;}
+
+/* ── TOAST ── */
+.toast{
+  position:fixed;bottom:calc(80px + var(--safe));left:50%;
+  transform:translateX(-50%) translateY(20px);
+  background:#1e293b;border:1px solid var(--border);
+  border-radius:12px;padding:10px 20px;font-size:.85rem;font-weight:600;
+  z-index:200;opacity:0;transition:all .3s;white-space:nowrap;
+  max-width:90vw;text-align:center;
+}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+.toast.success{border-color:var(--green);color:var(--green);}
+.toast.error{border-color:var(--red);color:var(--red);}
+
+/* ── LOADER ── */
+.loader{text-align:center;padding:40px;color:var(--muted);}
+.spinner{display:inline-block;width:28px;height:28px;border:3px solid var(--border);border-top-color:var(--blue);border-radius:50%;animation:spin .8s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+</style>
+</head>
+<body>
+<div id="app">
+  <div class="header">
+    <div class="header-title">🥩 <span>Согым</span>App</div>
+    <button class="icon-btn" id="headerActionBtn" title="Жаңа согым">＋</button>
+  </div>
+
+  <!-- HOME -->
+  <div id="screenHome" class="screen">
+    <div class="tabs">
+      <button class="tab active" data-tab="open">Белсенді</button>
+      <button class="tab" data-tab="closed">Аяқталған</button>
+    </div>
+    <div class="pad" id="purchaseList"><div class="loader"><div class="spinner"></div></div></div>
+  </div>
+
+  <!-- DETAIL -->
+  <div id="screenDetail" class="screen hidden">
+    <div class="pad" id="detailContent"></div>
+  </div>
+
+  <!-- CREATE -->
+  <div id="screenCreate" class="screen hidden">
+    <div class="pad">
+      <div style="font-size:1rem;font-weight:800;margin-bottom:16px;">➕ Жаңа согым</div>
+      <div class="form-group">
+        <label class="form-label">Атауы *</label>
+        <input class="form-input" id="fTitle" placeholder="мысалы: Абай көшесі согымы"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Мал түрі *</label>
+        <div class="animal-grid" id="animalGrid"></div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Баға (тг/кг) *</label>
+        <input class="form-input" id="fPrice" type="number" placeholder="2500"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Союу күні</label>
+        <input class="form-input" id="fDate" type="date"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Орны</label>
+        <input class="form-input" id="fLocation" placeholder="мысалы: Алматы, Алатау ауданы"/>
+      </div>
+      <div style="border-top:1px solid var(--border);margin:16px 0 14px;padding-top:14px;font-size:.8rem;font-weight:700;color:var(--muted);">ҰЙЫМДАСТЫРУШЫ</div>
+      <div class="form-group">
+        <label class="form-label">Есімі *</label>
+        <input class="form-input" id="fOwnerName" placeholder="Сіздің есіміңіз"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Телефон *</label>
+        <input class="form-input" id="fOwnerPhone" type="tel" placeholder="+7 777 123 4567"/>
+      </div>
+      <button class="btn btn-primary" id="btnCreate">✅ Согым жасау</button>
+    </div>
+  </div>
+
+  <!-- MY -->
+  <div id="screenMy" class="screen hidden">
+    <div class="pad" id="myList"><div class="loader"><div class="spinner"></div></div></div>
+  </div>
+
+  <!-- BOTTOM NAV -->
+  <div class="bottom-nav">
+    <button class="nav-item active" data-screen="home">
+      <span class="nav-icon">🏠</span><span class="nav-label">Басты</span>
+    </button>
+    <button class="nav-item" data-screen="create">
+      <span class="nav-icon">➕</span><span class="nav-label">Ашу</span>
+    </button>
+    <button class="nav-item" data-screen="my">
+      <span class="nav-icon">👤</span><span class="nav-label">Менікі</span>
+    </button>
+  </div>
+</div>
+
+<!-- JOIN MODAL -->
+<div class="modal-overlay hidden" id="joinModal">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title">✋ Согымға қосылу</div>
+    <div class="form-group">
+      <label class="form-label">Есіміңіз *</label>
+      <input class="form-input" id="joinName" placeholder="Аты-жөніңіз"/>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Телефон *</label>
+      <input class="form-input" id="joinPhone" type="tel" placeholder="+7 777 000 0000"/>
+    </div>
+    <div id="joinShareInfo" style="background:rgba(59,130,246,.08);border:1px solid rgba(59,130,246,.2);border-radius:12px;padding:12px;margin-bottom:14px;font-size:.82rem;"></div>
+    <button class="btn btn-primary" id="btnJoinConfirm">Қосылу</button>
+    <button class="btn btn-ghost" style="margin-top:8px;" id="btnJoinCancel">Болдырмау</button>
+  </div>
+</div>
+
+<!-- PAID MODAL -->
+<div class="modal-overlay hidden" id="paidModal">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title">💰 Төлемді растау</div>
+    <div class="form-group">
+      <label class="form-label">Ұйымдастырушының телефоны *</label>
+      <input class="form-input" id="ownerPhoneInput" placeholder="+7 777 000 0000"/>
+    </div>
+    <div id="paidParticipantInfo" style="font-size:.85rem;margin-bottom:14px;"></div>
+    <button class="btn btn-primary" id="btnPaidConfirm">✅ Төлем расталды</button>
+    <button class="btn btn-ghost" style="margin-top:8px;" id="btnPaidCancel">Болдырмау</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const API = '';
+let state = { tab: 'open', screen: 'home', currentPurchase: null, selectedAnimal: null, animals: [], joinPid: null, paidPid: null, paidPhone: null };
+
+// ── API ──────────────────────────────────────
+async function api(method, path, body) {
+  const opts = { method, headers: { 'Content-Type': 'application/json' } };
+  if (body) opts.body = JSON.stringify(body);
+  const r = await fetch(API + path, opts);
+  const d = await r.json();
+  if (!r.ok) throw new Error(d.detail || 'Қате');
+  return d;
+}
+
+// ── TOAST ────────────────────────────────────
+function toast(msg, type = 'success') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = `toast show ${type}`;
+  setTimeout(() => t.className = 'toast', 2500);
+}
+
+// ── NAVIGATE ─────────────────────────────────
+function navigate(screen) {
+  ['home','detail','create','my'].forEach(s => {
+    document.getElementById(`screen${s[0].toUpperCase()+s.slice(1)}`).classList.toggle('hidden', s !== screen);
+  });
+  document.querySelectorAll('.nav-item').forEach(el => el.classList.toggle('active', el.dataset.screen === screen));
+  document.getElementById('headerActionBtn').textContent = screen === 'detail' ? '←' : '＋';
+  state.screen = screen;
+  if (screen === 'home') loadPurchases();
+  if (screen === 'my') loadMy();
+}
+
+// ── PROGRESS BAR ─────────────────────────────
+function progressBar(taken, total) {
+  const pct = total ? Math.round(taken / total * 100) : 0;
+  const color = pct === 100 ? '#f59e0b' : '#3b82f6';
+  return `<div class="progress-bar"><div class="progress-fill" style="width:${pct}%;background:${color}"></div></div>
+  <div class="progress-label"><span>${taken}/${total} үлес</span><span>${100-pct}% бос</span></div>`;
+}
+
+function formatDate(d) {
+  if (!d) return '';
+  return new Date(d).toLocaleDateString('kk-KZ', { day:'numeric', month:'long' });
+}
+
+function formatMoney(n) {
+  return n ? n.toLocaleString('ru-RU') + ' ₸' : '';
+}
+
+// ── HOME ─────────────────────────────────────
+async function loadPurchases() {
+  const list = document.getElementById('purchaseList');
+  list.innerHTML = '<div class="loader"><div class="spinner"></div></div>';
+  try {
+    const data = await api('GET', `/api/purchases?status=${state.tab}`);
+    if (!data.length) {
+      list.innerHTML = `<div class="empty">
+        <span class="empty-icon">🔍</span>
+        <div class="empty-title">Согым жоқ</div>
+        <div class="empty-sub">${state.tab === 'open' ? 'Жаңа согым ашыңыз!' : 'Аяқталған согымдар жоқ'}</div>
+      </div>`;
+      return;
+    }
+    list.innerHTML = data.map(p => {
+      const isFull = p.free <= 0;
+      const badge = p.status === 'closed' ? '<span class="badge badge-closed">Жабық</span>' :
+                    isFull ? '<span class="badge badge-full">Толы</span>' :
+                    '<span class="badge badge-open">Ашық</span>';
+      return `<div class="card" onclick="openDetail(${p.id})">
+        <div class="card-top">
+          <span class="card-emoji">${animalEmoji(p.animal)}</span>
+          <div class="card-info">
+            <div class="card-title">${p.title}</div>
+            <div class="card-sub">${p.animal_name} · ${p.location || ''}</div>
+          </div>
+          ${badge}
+        </div>
+        <div class="progress-wrap">${progressBar(p.taken, p.shares)}</div>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-top:8px;">
+          <span class="price-chip">💰 ${formatMoney(p.price_per_share)}</span>
+          <span style="font-size:.75rem;color:var(--muted);">${p.event_date ? '📅 '+formatDate(p.event_date) : ''}</span>
+        </div>
+      </div>`;
+    }).join('');
+  } catch(e) { list.innerHTML = `<div class="empty"><span class="empty-icon">⚠️</span><div class="empty-title">${e.message}</div></div>`; }
+}
+
+function animalEmoji(a) {
+  return {cow:'🐄', horse:'🐎', sheep:'🐑'}[a] || '🥩';
+}
+
+// ── DETAIL ───────────────────────────────────
+async function openDetail(pid) {
+  navigate('detail');
+  const el = document.getElementById('detailContent');
+  el.innerHTML = '<div class="loader"><div class="spinner"></div></div>';
+  try {
+    const p = await api('GET', `/api/purchases/${pid}`);
+    state.currentPurchase = p;
+    renderDetail(p);
+  } catch(e) { el.innerHTML = `<div class="empty"><span>⚠️</span> ${e.message}</div>`; }
+}
+
+function renderDetail(p) {
+  const el = document.getElementById('detailContent');
+  const isFull = p.free <= 0;
+  const isClosed = p.status === 'closed';
+  const paidCount = p.participants.filter(x => x.paid).length;
+
+  el.innerHTML = `
+    <div class="detail-hero">
+      <span class="detail-emoji">${animalEmoji(p.animal)}</span>
+      <div class="detail-title">${p.title}</div>
+      <div class="detail-meta">${p.animal_name} · ${isClosed ? '🔴 Жабық' : '🟢 Ашық'}</div>
+    </div>
+
+    <div class="info-row">
+      <div class="info-chip"><label>💰 1 үлес</label><span>${formatMoney(p.price_per_share)}</span></div>
+      <div class="info-chip"><label>⚖️ Салмақ</label><span>~${p.weight} кг</span></div>
+      <div class="info-chip"><label>📊 Үлестер</label><span>${p.taken}/${p.shares}</span></div>
+      <div class="info-chip"><label>💵 Баға/кг</label><span>${formatMoney(p.price_per_kg)}</span></div>
+    </div>
+
+    ${p.event_date || p.location ? `<div class="info-row">
+      ${p.event_date ? `<div class="info-chip"><label>📅 Күні</label><span>${formatDate(p.event_date)}</span></div>` : ''}
+      ${p.location ? `<div class="info-chip"><label>📍 Орны</label><span>${p.location}</span></div>` : ''}
+    </div>` : ''}
+
+    <div class="progress-wrap" style="margin:4px 0 12px;">${progressBar(p.taken, p.shares)}</div>
+
+    ${!isClosed && !isFull ? `<button class="btn btn-primary" onclick="showJoinModal(${p.id}, ${p.price_per_share})">✋ Қосылу — ${formatMoney(p.price_per_share)}</button>` : ''}
+    ${isFull && !isClosed ? `<button class="btn btn-ghost" disabled style="opacity:.5">🎯 Барлық үлестер таратылды</button>` : ''}
+
+    <div class="section-label">👥 Қатысушылар (${p.participants.length})</div>
+    ${p.participants.length ? p.participants.map(pt => `
+      <div class="participant-row">
+        <div class="p-info">
+          <div class="p-ava">${pt.name[0].toUpperCase()}</div>
+          <div><div class="p-name">${pt.name}</div><div class="p-phone">${pt.phone}</div></div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <span class="paid-badge ${pt.paid ? 'paid-yes' : 'paid-no'}">${pt.paid ? '✅ Төледі' : '⏳ Күтілуде'}</span>
+          ${!pt.paid ? `<button class="btn btn-ghost btn-sm" onclick="showPaidModal(${p.id}, '${pt.phone}', '${pt.name}')">✓</button>` : ''}
+        </div>
+      </div>`).join('') : `<div style="text-align:center;color:var(--muted);font-size:.85rem;padding:16px;">Әлі ешкім қосылмаған</div>`}
+
+    <div class="section-label">ℹ️ Ұйымдастырушы</div>
+    <div class="info-chip" style="margin-bottom:16px;">
+      <label>👤 ${p.owner_name}</label><span>${p.owner_phone}</span>
+    </div>
+
+    ${!isClosed ? `
+    <div class="btn-row">
+      <button class="btn btn-danger btn-sm" onclick="closePurchase(${p.id}, '${p.owner_phone}')">🔒 Жабу</button>
+    </div>` : ''}
+    <div style="height:16px;"></div>
+  `;
+}
+
+// ── JOIN MODAL ────────────────────────────────
+function showJoinModal(pid, price) {
+  state.joinPid = pid;
+  document.getElementById('joinShareInfo').innerHTML = `1 үлестің бағасы: <strong style="color:var(--blue)">${formatMoney(price)}</strong>`;
+  document.getElementById('joinName').value = '';
+  document.getElementById('joinPhone').value = '';
+  document.getElementById('joinModal').classList.remove('hidden');
+}
+
+document.getElementById('btnJoinCancel').onclick = () => document.getElementById('joinModal').classList.add('hidden');
+document.getElementById('btnJoinConfirm').onclick = async () => {
+  const name = document.getElementById('joinName').value.trim();
+  const phone = document.getElementById('joinPhone').value.trim();
+  if (!name || !phone) return toast('Есім мен телефонды толтырыңыз', 'error');
+  try {
+    const p = await api('POST', `/api/purchases/${state.joinPid}/join`, { name, phone });
+    document.getElementById('joinModal').classList.add('hidden');
+    state.currentPurchase = p;
+    renderDetail(p);
+    toast('✅ Сіз согымға қосылдыңыз!');
+  } catch(e) { toast(e.message, 'error'); }
+};
+
+// ── PAID MODAL ────────────────────────────────
+function showPaidModal(pid, phone, name) {
+  state.paidPid = pid; state.paidPhone = phone;
+  document.getElementById('paidParticipantInfo').innerHTML = `Қатысушы: <strong>${name}</strong> (${phone})`;
+  document.getElementById('ownerPhoneInput').value = '';
+  document.getElementById('paidModal').classList.remove('hidden');
+}
+
+document.getElementById('btnPaidCancel').onclick = () => document.getElementById('paidModal').classList.add('hidden');
+document.getElementById('btnPaidConfirm').onclick = async () => {
+  const ownerPhone = document.getElementById('ownerPhoneInput').value.trim();
+  if (!ownerPhone) return toast('Ұйымдастырушының телефонын енгізіңіз', 'error');
+  try {
+    const p = await api('POST', `/api/purchases/${state.paidPid}/paid`, { owner_phone: ownerPhone, participant_phone: state.paidPhone });
+    document.getElementById('paidModal').classList.add('hidden');
+    state.currentPurchase = p;
+    renderDetail(p);
+    toast('✅ Төлем расталды!');
+  } catch(e) { toast(e.message, 'error'); }
+};
+
+// ── CLOSE PURCHASE ────────────────────────────
+async function closePurchase(pid, ownerPhone) {
+  const phone = prompt('Ұйымдастырушының телефонын растаңыз:');
+  if (!phone) return;
+  try {
+    await api('POST', `/api/purchases/${pid}/close?owner_phone=${encodeURIComponent(phone)}`);
+    toast('🔒 Согым жабылды');
+    openDetail(pid);
+  } catch(e) { toast(e.message, 'error'); }
+}
+
+// ── CREATE ───────────────────────────────────
+async function loadAnimals() {
+  try {
+    state.animals = await api('GET', '/api/animals');
+    const grid = document.getElementById('animalGrid');
+    grid.innerHTML = state.animals.map(a => `
+      <div class="animal-opt" data-id="${a.id}" onclick="selectAnimal('${a.id}', ${a.default_price})">
+        <span class="a-emoji">${animalEmoji(a.id)}</span>
+        <div class="a-name">${a.name}</div>
+        <div class="a-price">${a.shares} үлес</div>
+      </div>`).join('');
+  } catch(e) {}
+}
+
+function selectAnimal(id, defaultPrice) {
+  state.selectedAnimal = id;
+  document.querySelectorAll('.animal-opt').forEach(el => el.classList.toggle('selected', el.dataset.id === id));
+  if (!document.getElementById('fPrice').value) document.getElementById('fPrice').value = defaultPrice;
+}
+
+document.getElementById('btnCreate').onclick = async () => {
+  const title = document.getElementById('fTitle').value.trim();
+  const price = parseInt(document.getElementById('fPrice').value);
+  const ownerName = document.getElementById('fOwnerName').value.trim();
+  const ownerPhone = document.getElementById('fOwnerPhone').value.trim();
+  if (!title) return toast('Атауын енгізіңіз', 'error');
+  if (!state.selectedAnimal) return toast('Мал түрін таңдаңыз', 'error');
+  if (!price || price < 100) return toast('Дұрыс баға енгізіңіз', 'error');
+  if (!ownerName) return toast('Есіміңізді енгізіңіз', 'error');
+  if (!ownerPhone) return toast('Телефонды енгізіңіз', 'error');
+  try {
+    const p = await api('POST', '/api/purchases', {
+      title, animal: state.selectedAnimal, price_per_kg: price,
+      event_date: document.getElementById('fDate').value || null,
+      location: document.getElementById('fLocation').value.trim() || null,
+      owner_name: ownerName, owner_phone: ownerPhone
+    });
+    // reset form
+    ['fTitle','fPrice','fDate','fLocation','fOwnerName','fOwnerPhone'].forEach(id => document.getElementById(id).value = '');
+    state.selectedAnimal = null;
+    document.querySelectorAll('.animal-opt').forEach(el => el.classList.remove('selected'));
+    toast('🎉 Согым жасалды!');
+    openDetail(p.id);
+  } catch(e) { toast(e.message, 'error'); }
+};
+
+// ── MY ───────────────────────────────────────
+async function loadMy() {
+  const el = document.getElementById('myList');
+  el.innerHTML = `<div style="font-size:1rem;font-weight:800;margin-bottom:16px;">👤 Менің согымдарым</div>
+  <div class="loader"><div class="spinner"></div></div>`;
+  try {
+    const [open, closed] = await Promise.all([
+      api('GET', '/api/purchases?status=open'),
+      api('GET', '/api/purchases?status=closed'),
+    ]);
+    const all = [...open, ...closed];
+    if (!all.length) {
+      el.innerHTML = `<div class="empty"><span class="empty-icon">📭</span><div class="empty-title">Согым жоқ</div><div class="empty-sub">Жаңа согым ашыңыз</div></div>`;
+      return;
+    }
+    el.innerHTML = `<div style="font-size:1rem;font-weight:800;margin-bottom:16px;">👤 Барлық согымдар</div>` +
+      all.map(p => `<div class="card" onclick="openDetail(${p.id})">
+        <div class="card-top">
+          <span class="card-emoji">${animalEmoji(p.animal)}</span>
+          <div class="card-info">
+            <div class="card-title">${p.title}</div>
+            <div class="card-sub">${p.animal_name}</div>
+          </div>
+          <span class="badge ${p.status === 'closed' ? 'badge-closed' : p.free <= 0 ? 'badge-full' : 'badge-open'}">${p.status === 'closed' ? 'Жабық' : p.free <= 0 ? 'Толы' : 'Ашық'}</span>
+        </div>
+        <div class="progress-wrap">${progressBar(p.taken, p.shares)}</div>
+      </div>`).join('');
+  } catch(e) { el.innerHTML = `<div class="empty"><span>⚠️</span> ${e.message}</div>`; }
+}
+
+// ── TABS ─────────────────────────────────────
+document.querySelectorAll('.tab').forEach(btn => {
+  btn.onclick = () => {
+    document.querySelectorAll('.tab').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    state.tab = btn.dataset.tab;
+    loadPurchases();
+  };
+});
+
+// ── NAV ──────────────────────────────────────
+document.querySelectorAll('.nav-item').forEach(btn => {
+  btn.onclick = () => navigate(btn.dataset.screen);
+});
+
+document.getElementById('headerActionBtn').onclick = () => {
+  if (state.screen === 'detail') navigate('home');
+  else navigate('create');
+};
+
+// ── INIT ─────────────────────────────────────
+loadAnimals();
+loadPurchases();
+</script>
+</body>
+</html>
